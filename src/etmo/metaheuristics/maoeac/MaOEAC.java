@@ -102,7 +102,7 @@ public class MaOEAC extends Algorithm {
                 System.out.println("solutionSets["+k+"] = "+ solutionSets[k].size());
                 System.exit(0);
             }
-//			按照支配关系层取前面的
+//			按照支配关系层取前面的,正好取到满足k但是可能大于k的
             SolutionSet st = getStSolutionSet(solutionSets[k],populationSize_/(problemSet_.get(0).getNumberOfObjectives()));
             List<SolutionSet> list = new <SolutionSet>ArrayList();
             for(int i=0;i<st.size();i++){
@@ -118,6 +118,8 @@ public class MaOEAC extends Algorithm {
              * step5.5:Agglomerative Hierarchical Clustering Based Average-Link Method
              * and K-Cluster Stopping Condition
              */
+//            输入list中是>=k的集合，输出list是k个集合
+//            System.out.println(generations_+" : "+list.size());
             list = new HierarchicalClustering1(list).clusteringAnalysis(populationSize_/(problemSet_.get(0).getNumberOfObjectives()));
             if(list.size() != populationSize_/(problemSet_.get(0).getNumberOfObjectives())){
                 System.out.println("ListSize1 = "+list.size());
@@ -135,6 +137,7 @@ public class MaOEAC extends Algorithm {
     private void bestSolutionSelection(List<SolutionSet> list, int k) {
         double minClustering2Axis = 1.0e+30;
         int minClustering2AxisID = -1;
+
         for(int i=0;i<list.size();i++){
             SolutionSet sols = list.get(i);
             if(sols.size() == 0){
@@ -143,7 +146,7 @@ public class MaOEAC extends Algorithm {
             }
 
             double angle1 = Math.acos(Math.abs(sols.getCentroidVector().getNormalizedObjective(k)/sols.getCentroidVector().getDistanceToIdealPoint()));
-
+//            System.out.println(this.generations_+": "+list.get(i).get(0).getNormalizedObjective(k));
 
             if(angle1 < minClustering2Axis){
                 minClustering2Axis = angle1;
@@ -152,6 +155,7 @@ public class MaOEAC extends Algorithm {
         }//for
         double minSolution2Axis = 1.0e+30;
         int minSolution2AxisID = -1;
+
         for(int j=0;j<list.get(minClustering2AxisID).size();j++){
             Solution sol = list.get(minClustering2AxisID).get(j);
             double ang = Math.acos(list.get(minClustering2AxisID).get(j).getNormalizedObjective(k)/list.get(minClustering2AxisID).get(j).getDistanceToIdealPoint());
@@ -162,6 +166,7 @@ public class MaOEAC extends Algorithm {
         }//for
         population_.add(list.get(minClustering2AxisID).get(minSolution2AxisID));
         list.remove(minClustering2AxisID);
+//        上面是选出了该目标大空间里面距离轴向量最近的个体加到下一代
 
         double min2CenterLine = 1.0e+30;
         int min2CenterLineId = -1;
@@ -329,8 +334,9 @@ public class MaOEAC extends Algorithm {
 
             for(int j=0; j<problemSet_.get(0).getNumberOfObjectives(); j++){
                 double val = 0.0;
-                val = (sol.getObjective(j) - zideal_[j])/(znadir_[j]-zideal_[j]);
+                val = (sol.getObjective(j) - zideal_[j])/(znadir_[j]-zideal_[j]+1.0e-30);
                 //val = (sol.getObjective(j) - zideal_[j]);
+//                System.out.println(generations_+" : "+(znadir_[j]-zideal_[j])+": max = "+znadir_[j]+": min = "+zideal_[j]);
                 sol.setNormalizedObjective(j, val);
             }
         }
@@ -379,8 +385,8 @@ public class MaOEAC extends Algorithm {
                     parents[0] = (Solution) selection_.execute(population_);
                     parents[1] = (Solution) selection_.execute(population_);
                 }else{
-                    parents[0] = (Solution) selection_.execute(population_);
-                    parents[1] = (Solution) selection_.execute(population_);
+                    parents[0] = (Solution) selection_.execute(offspringSolutionSets[i]);
+                    parents[1] = (Solution) selection_.execute(offspringSolutionSets[i]);
                 }
                 Solution[] offSpring = (Solution[]) crossover_
                         .execute(parents);

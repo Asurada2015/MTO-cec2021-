@@ -4,11 +4,9 @@ import etmo.core.Algorithm;
 import etmo.core.Operator;
 import etmo.core.ProblemSet;
 import etmo.core.SolutionSet;
-import etmo.metaheuristics.nsgaII.NSGAII;
 import etmo.operators.crossover.CrossoverFactory;
 import etmo.operators.mutation.MutationFactory;
 import etmo.operators.selection.SelectionFactory;
-import etmo.problems.benchmarks_ETMO.ETMOF1;
 import etmo.problems.benchmarks_ETMO.*;
 import etmo.qualityIndicator.QualityIndicator;
 import etmo.util.JMException;
@@ -29,7 +27,7 @@ public class MaOEAC_main {
 
         HashMap parameters; // Operator parameters
 
-        for (int pCase = 4; pCase <= 4; pCase++ ){
+        for (int pCase = 16; pCase <= 16; pCase++ ){
             switch (pCase){
                 case 1:
                     problemSet1 = ETMOF1.getProblem();
@@ -77,7 +75,7 @@ public class MaOEAC_main {
                     problemSet1 = ETMOF15.getProblem();
                     break;
                 case 16:
-                    problemSet1 = ETMOF16.getProblem();
+                    problemSet1 = ETMOF6.getProblem();
                     break;
                 default:
                     problemSet1 = ETMOF1.getProblem();
@@ -94,7 +92,7 @@ public class MaOEAC_main {
                 String pf = "PF/StaticPF/" + problemSet2.get(0).getHType() + "_" + problemSet2.get(0).getNumberOfObjectives() + "D.pf";
                 //String pf = "PF/StaticPF/" + "convex.pf";
                 //System.out.println(pf);
-                algorithm.setInputParameter("populationSize", 99);
+                algorithm.setInputParameter("populationSize", 100);
                 algorithm.setInputParameter("maxGenerations",1000);
 
                 parameters = new HashMap();

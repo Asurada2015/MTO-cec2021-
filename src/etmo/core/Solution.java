@@ -632,7 +632,9 @@ public class Solution implements Serializable {
 		normalizedObjective_[j] = val;
     }
 
-	public double getNormalizedObjective(int j) {
+	public double
+
+	getNormalizedObjective(int j) {
 		return normalizedObjective_[j];
 	}
 
