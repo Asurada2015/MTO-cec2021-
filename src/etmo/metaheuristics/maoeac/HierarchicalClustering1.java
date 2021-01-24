@@ -22,11 +22,17 @@ public class HierarchicalClustering1 {
         int[] minIndexs = new int[size];//每个类与之最近的类
         int[] index = new int[4];//当前最相似的两个类
         index[0] = index[1] = index[2] = index[3] = -1;
+
+        int cntNaN = 0;
         for(int i=0; i<size; i++){
             double min = Double.MAX_VALUE;
+
             for(int j=0;j<size;j++){
                 if(i != j){
                     angle = computeAngle(list.get(i).getCentroidVector(),list.get(j).getCentroidVector());
+                    if (Double.isNaN(angle)){
+                        cntNaN++;
+                    }
                     //angle = computeAngle(list.get(i).getCentroid(),list.get(j).getCentroid());
                     if(min > angle){
                         min = angle;
@@ -35,6 +41,9 @@ public class HierarchicalClustering1 {
                     }
                 }
             }
+
+//            index[0] 和 index[1] 是与i相似的两个类->作为中转,[2][3]为所有的最相似的两个类
+
             minAngles[i] =  min;
             minIndexs[i] = index[1];
             if(minAngle > min){
@@ -43,7 +52,14 @@ public class HierarchicalClustering1 {
                 index[3] = index[1];
             }
         }
+
+        if(cntNaN == size * size){
+            System.out.println("HierarchicalClustering Wrong Because of NaN!!");
+        }
+
         while(size > clusteringSize){
+//            这里index[2]==-1??
+//            System.out.println("index[2] = "+index[2]);
             SolutionSet sols = (list.get(index[2]).union(list.get(index[3])));
             list.get(index[2]).setRemove(true);
             list.remove(index[3]);
@@ -138,7 +154,7 @@ public class HierarchicalClustering1 {
         for(int i=0; i<list.get(0).get(0).getNumberOfObjectives(); i++){
             innerProduc += s1.getNormalizedObjective(i) * s2.getNormalizedObjective(i);
         }
-        double value = Math.abs(innerProduc/(distanceToidealPoint1*distanceToidealPoint2));
+        double value = Math.abs(innerProduc/(distanceToidealPoint1*distanceToidealPoint2+1.0e-30));
         if(value > 1.0){
             //System.out.println(value);
             value = 1.0;

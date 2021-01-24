@@ -119,7 +119,7 @@ public class MaOEAC extends Algorithm {
              * and K-Cluster Stopping Condition
              */
 //            输入list中是>=k的集合，输出list是k个集合
-//            System.out.println(generations_+" : "+list.size());
+//            System.out.print(generations_+" : ");
             list = new HierarchicalClustering1(list).clusteringAnalysis(populationSize_/(problemSet_.get(0).getNumberOfObjectives()));
             if(list.size() != populationSize_/(problemSet_.get(0).getNumberOfObjectives())){
                 System.out.println("ListSize1 = "+list.size());
@@ -138,6 +138,7 @@ public class MaOEAC extends Algorithm {
         double minClustering2Axis = 1.0e+30;
         int minClustering2AxisID = -1;
 
+        int cntNaN = 0;
         for(int i=0;i<list.size();i++){
             SolutionSet sols = list.get(i);
             if(sols.size() == 0){
@@ -145,20 +146,23 @@ public class MaOEAC extends Algorithm {
                 System.exit(0);
             }
 
-            double angle1 = Math.acos(Math.abs(sols.getCentroidVector().getNormalizedObjective(k)/sols.getCentroidVector().getDistanceToIdealPoint()));
-//            System.out.println(this.generations_+": "+list.get(i).get(0).getNormalizedObjective(k));
+            double angle1 = Math.acos(Math.abs(sols.getCentroidVector().getNormalizedObjective(k)/(sols.getCentroidVector().getDistanceToIdealPoint())+1.0e-30));
+            if(Double.isNaN(angle1))  cntNaN++;
 
             if(angle1 < minClustering2Axis){
                 minClustering2Axis = angle1;
                 minClustering2AxisID = i;
             }//if
         }//for
+
+        if(cntNaN == list.size()) System.out.println("BestSolutionSelection Wrong Because of NaN!!");
+
         double minSolution2Axis = 1.0e+30;
         int minSolution2AxisID = -1;
 
         for(int j=0;j<list.get(minClustering2AxisID).size();j++){
             Solution sol = list.get(minClustering2AxisID).get(j);
-            double ang = Math.acos(list.get(minClustering2AxisID).get(j).getNormalizedObjective(k)/list.get(minClustering2AxisID).get(j).getDistanceToIdealPoint());
+            double ang = Math.acos(list.get(minClustering2AxisID).get(j).getNormalizedObjective(k)/(list.get(minClustering2AxisID).get(j).getDistanceToIdealPoint()));
             if(ang < minSolution2Axis){
                 minSolution2Axis = ang;
                 minSolution2AxisID = j;
@@ -335,6 +339,7 @@ public class MaOEAC extends Algorithm {
             for(int j=0; j<problemSet_.get(0).getNumberOfObjectives(); j++){
                 double val = 0.0;
                 val = (sol.getObjective(j) - zideal_[j])/(znadir_[j]-zideal_[j]+1.0e-30);
+                if(Double.isNaN(val))System.out.println("normalizationObjective wrong!!");
                 //val = (sol.getObjective(j) - zideal_[j]);
 //                System.out.println(generations_+" : "+(znadir_[j]-zideal_[j])+": max = "+znadir_[j]+": min = "+zideal_[j]);
                 sol.setNormalizedObjective(j, val);
