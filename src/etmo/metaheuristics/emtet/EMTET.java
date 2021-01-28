@@ -4,11 +4,10 @@ import etmo.core.*;
 import etmo.util.Distance;
 import etmo.util.JMException;
 import etmo.util.PORanking;
-import etmo.util.PseudoRandom;
+import etmo.util.Ranking;
 import etmo.util.comparators.CrowdingComparator;
 import etmo.util.comparators.LocationComparator;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -68,13 +67,22 @@ public class EMTET extends MtoAlgorithm {
     private void createTransferPopulation() throws JMException {
         for (int i = 0; i < population.length; i++){
 //            存活个体即迁移解
-            SolutionSet survivalPopulation = new SolutionSet(G);
+            SolutionSet survivalPopulation = new SolutionSet();
+
+            Ranking ranking = new Ranking(population[i]);
+            SolutionSet search =  ranking.getSubfront(0);
 
 //            目标任务中标记为1且位于0层的个体为存活个体
-            for (int j = 0; j < populationSize && population[i].get(j).getRank() == 0; j++){
-                Solution survival = population[i].get(j);
-                if(survival.getSkillFactor() == 1){
-                    survivalPopulation.add(survival);
+//            for (int j = 0; j < populationSize && population[i].get(j).getRank() == 0; j++){
+//                Solution survival = population[i].get(j);
+//                if(survival.getSkillFactor() == 1){
+//                    survivalPopulation.add(survival);
+//                }
+//            }
+            for (int j = 0; j < search.size(); j++){
+                if (search.get(j).getSkillFactor() == 1){
+                    Solution s = new Solution(search.get(j));
+                    survivalPopulation.add(s);
                 }
             }
 
@@ -89,10 +97,11 @@ public class EMTET extends MtoAlgorithm {
                 SolutionSet rankHignG = new SolutionSet(G);
                 if (survivalPopulation.size() == 0){
                     for (int k = 0; k < G; k++){
-                        population[j].get(k).setSkillFactor(1);
-                        problemSet_.get(i).evaluate(population[j].get(k));
+                        Solution s = new Solution(population[j].get(k));
+                        s.setSkillFactor(1);
+                        problemSet_.get(i).evaluate(s);
                         evaluations++;
-                        rankHignG.add(population[j].get(k));
+                        rankHignG.add(s);
                     }
                     population[i] = population[i].union(rankHignG);
                 }
@@ -101,12 +110,15 @@ public class EMTET extends MtoAlgorithm {
                     int cycle = G / survivalPopulation.size();
                     int more = G % survivalPopulation.size();
                     for (int k = 0; k < survivalPopulation.size(); k++){
-//                        线性变换不影响直接在统一域内计算距离
-                           Variable[] x = survivalPopulation.get(k).getDecisionVariables();
-                           int num = cycle;
-                           if (k < more) num += 1;
-                           population[i] = population[i].union(transferNeighbor(x,j,i,num));
-                    }
+
+//                        线性变换不影响直接在统一域内计算距离->还是先转换回去
+                        double x[] = problemSet_.get(j).scaleVariables(survivalPopulation.get(k));
+//                        Variable[] x = survivalPopulation.get(k).getDecisionVariables();
+                        int num = cycle;
+                        if (k < more) num += 1;
+//                        j是源任务，i是目标任务
+                        population[i] = population[i].union(transferNeighbor(x,j,i,num));
+                }
 
                 }
 
@@ -115,22 +127,22 @@ public class EMTET extends MtoAlgorithm {
 
     }
 
-    private SolutionSet transferNeighbor(Variable[] x, int source, int target, int num) throws JMException {
+    private SolutionSet transferNeighbor(double[] x, int source, int target, int num) throws JMException {
 //        记得要做标记
         SolutionSet closestNeighbor = new SolutionSet(num);
         Map<Double,Integer> dis = new TreeMap<Double,Integer>();
         for (int i = 0; i < populationSize; i++){
-            Variable[] y = population[source].get(i).getDecisionVariables();
+            double[] y = problemSet_.get(source).scaleVariables(population[source].get(i));
             double sum = 0;
             for(int j = 0 ; j < x.length; j++){
-                sum += Math.pow(x[j].getValue() - y[j].getValue(),2);
+                sum += Math.pow(x[j] - y[j],2);
             }
             dis.put(Math.sqrt(sum), i);
         }
         int cnt = 0;
         for (double key : dis.keySet()){
-            if (cnt > num)  break;
-            Solution t = population[source].get(dis.get(key));
+            if (cnt >= num)  break;
+            Solution t = new Solution(population[source].get(dis.get(key)));
             t.setSkillFactor(1);
             problemSet_.get(target).evaluate(t);
             evaluations++;

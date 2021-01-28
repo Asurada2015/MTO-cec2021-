@@ -6,11 +6,9 @@ import etmo.core.ProblemSet;
 import etmo.core.SolutionSet;
 import etmo.operators.crossover.CrossoverFactory;
 import etmo.operators.mutation.MutationFactory;
-import etmo.problems.benchmarks_ETMO.ETMOF1;
 import etmo.problems.benchmarks_ETMO.*;
 import etmo.qualityIndicator.QualityIndicator;
 import etmo.util.JMException;
-import etmo.util.Ranking;
 
 import java.io.IOException;
 import java.text.DecimalFormat;
@@ -28,7 +26,7 @@ public class MOEAD_main {
 
         HashMap parameters; // Operator parameters
 
-        for (int pCase = 10; pCase <= 10; pCase++ ){
+        for (int pCase = 16; pCase <= 16; pCase++ ){
             switch (pCase){
                 case 1:
                     problemSet1 = ETMOF1.getProblem();
@@ -54,8 +52,29 @@ public class MOEAD_main {
                 case 8:
                     problemSet1 = ETMOF8.getProblem();
                     break;
+                case 9:
+                    problemSet1 = ETMOF9.getProblem();
+                    break;
                 case 10:
-                    problemSet1 = ETMOF16.getProblem();
+                    problemSet1 = ETMOF10.getProblem();
+                    break;
+                case 11:
+                    problemSet1 = ETMOF11.getProblem();
+                    break;
+                case 12:
+                    problemSet1 = ETMOF12.getProblem();
+                    break;
+                case 13:
+                    problemSet1 = ETMOF13.getProblem();
+                    break;
+                case 14:
+                    problemSet1 = ETMOF14.getProblem();
+                    break;
+                case 15:
+                    problemSet1 = ETMOF15.getProblem();
+                    break;
+                case 16:
+                    problemSet1 = ETMOF25.getProblem();
                     break;
                 default:
                     problemSet1 = ETMOF1.getProblem();
@@ -70,7 +89,7 @@ public class MOEAD_main {
 
                 String pf = "PF/StaticPF/" + problemSet2.get(0).getHType() + "_" + problemSet2.get(0).getNumberOfObjectives() + "D.pf";
 
-                algorithm.setInputParameter("populationSize", 495);
+                algorithm.setInputParameter("populationSize", 100);
                 algorithm.setInputParameter("maxEvaluations", 100 * 1000);
 
                 algorithm.setInputParameter("dataDirectory", "D:\\Workspace\\EMTO2021\\myRes\\MTO-cec2021-\\resources\\weightVectorFiles\\moead");
@@ -98,12 +117,12 @@ public class MOEAD_main {
                 System.out.println("RunID\t" + "IGD for " + problemSet2.get(0).getName());
                 DecimalFormat form = new DecimalFormat("#.####E0");
                 QualityIndicator indicator = new QualityIndicator(problemSet2.get(0), pf);
-                int times = 21;
+                int times = 1;
                 double aveIGD = 0;
                 for (int i = 1; i <= times; i++) {
                     SolutionSet population = algorithm.execute();
-//                population.printObjectivesToFile("MOEAD_"+problemSet.get(0).getNumberOfObjectives()+"Obj_"+
-//                        problemSet.get(0).getName()+ "_" + problemSet.get(0).getNumberOfVariables() + "D_run"+i+".txt");
+                    population.printObjectivesToFile("MOEAD_"+problemSet2.get(0).getNumberOfObjectives()+"Obj_"+
+                        problemSet2.get(0).getName()+ "_" + problemSet2.get(0).getNumberOfVariables() + "D_run"+i+".txt");
                     double igd = indicator.getIGD(population);
                     aveIGD += igd;
                     System.out.println(i + "\t" + form.format(igd));

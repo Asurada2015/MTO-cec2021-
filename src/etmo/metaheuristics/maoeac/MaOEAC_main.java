@@ -27,22 +27,22 @@ public class MaOEAC_main {
 
         HashMap parameters; // Operator parameters
 
-        for (int pCase = 2; pCase <= 3; pCase++ ){
+        for (int pCase = 1; pCase <= 16; pCase++ ){
             switch (pCase){
                 case 1:
-                    problemSet1 = ETMOF28.getProblem();
+                    problemSet1 = ETMOF1.getProblem();
                     break;
                 case 2:
-                    problemSet1 = ETMOF29.getProblem();
+                    problemSet1 = ETMOF2.getProblem();
                     break;
                 case 3:
-                    problemSet1 = ETMOF32.getProblem();
+                    problemSet1 = ETMOF3.getProblem();
                     break;
                 case 4:
-                    problemSet1 = ETMOF32.getProblem();
+                    problemSet1 = ETMOF4.getProblem();
                     break;
                 case 5:
-                    problemSet1 = ETMOF32.getProblem();
+                    problemSet1 = ETMOF5.getProblem();
                     break;
                 case 6:
                     problemSet1 = ETMOF6.getProblem();
@@ -75,7 +75,7 @@ public class MaOEAC_main {
                     problemSet1 = ETMOF15.getProblem();
                     break;
                 case 16:
-                    problemSet1 = ETMOF17.getProblem();
+                    problemSet1 = ETMOF16.getProblem();
                     break;
                 default:
                     problemSet1 = ETMOF1.getProblem();
@@ -83,7 +83,7 @@ public class MaOEAC_main {
 
 
             int taskNumber = problemSet1.size();
-            System.out.println("taskNumber = "+taskNumber);
+//            System.out.println("taskNumber = "+taskNumber);
             System.out.println("TaskID\t" + "IGD for " + problemSet1.get(0).getName()+" to " +problemSet1.get(taskNumber-1).getName());
             for (int tsk=0;tsk<taskNumber;tsk++) {
 
@@ -93,13 +93,13 @@ public class MaOEAC_main {
                 String pf = "PF/StaticPF/" + problemSet2.get(0).getHType() + "_" + problemSet2.get(0).getNumberOfObjectives() + "D.pf";
                 //String pf = "PF/StaticPF/" + "convex.pf";
                 //System.out.println(pf);
-                algorithm.setInputParameter("populationSize", 99);
+                algorithm.setInputParameter("populationSize", 100);
                 algorithm.setInputParameter("maxGenerations",1000);
 
                 parameters = new HashMap();
                 parameters.put("probability", 0.9);
                 parameters.put("distributionIndex", 20.0);
-                crossover = CrossoverFactory.getCrossoverOperator("SBXCrossover", parameters);
+                crossover = CrossoverFactory.getCrossoverOperator("DifferentialEvolutionCrossover", parameters);
 
                 // Mutation operator
                 parameters = new HashMap();
@@ -119,7 +119,7 @@ public class MaOEAC_main {
 //                System.out.println("RunID\t" + "IGD for " + problemSet2.get(0).getName());
                 DecimalFormat form = new DecimalFormat("#.####E0");
                 QualityIndicator indicator = new QualityIndicator(problemSet2.get(0), pf);
-                int times = 21;
+                int times = 3;
                 double aveIGD = 0;
                 for (int i = 1; i <= times; i++) {
                     SolutionSet population = algorithm.execute();
@@ -133,7 +133,9 @@ public class MaOEAC_main {
                 }
 //                System.out.println("Average IGD for " + problemSet2.get(0).getName() + ": " + form.format(aveIGD / times));
 //                System.out.println();
-                System.out.println(tsk+"\t"+form.format(aveIGD / times));
+//                System.out.println(tsk+"\t"+form.format(aveIGD / times));
+                System.out.println(form.format(aveIGD / times));
+
             }
         }
 

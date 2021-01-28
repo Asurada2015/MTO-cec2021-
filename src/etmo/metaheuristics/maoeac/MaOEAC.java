@@ -1,14 +1,16 @@
 package etmo.metaheuristics.maoeac;
 
 import etmo.core.*;
+import etmo.operators.crossover.SBXCrossover;
 import etmo.util.JMException;
 import etmo.util.PseudoRandom;
 import etmo.util.Ranking;
-//import jmetal.util.PseudoRandom;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+
+//import jmetal.util.PseudoRandom;
 
 
 public class MaOEAC extends Algorithm {
@@ -383,57 +385,49 @@ public class MaOEAC extends Algorithm {
             gbests[i] = offspringSolutionSets[i].get(0);
         }
         for(int i=0;i<problemSet_.get(0).getNumberOfObjectives();i++ ){
-            Solution[] parents = new Solution[2];
-            for(int j=0;j < offspringSolutionSets[i].size();j++){
-                double rd0 = PseudoRandom.randDouble();
-                if(rd0 < 0.2){
-                    parents[0] = (Solution) selection_.execute(population_);
-                    parents[1] = (Solution) selection_.execute(population_);
-                }else{
-                    parents[0] = (Solution) selection_.execute(offspringSolutionSets[i]);
-                    parents[1] = (Solution) selection_.execute(offspringSolutionSets[i]);
+
+            if (crossover_.getClass() == SBXCrossover.class){
+                Solution[] parents = new Solution[2];
+                for(int j=0;j < offspringSolutionSets[i].size();j++) {
+                    double rd0 = PseudoRandom.randDouble();
+                    if (rd0 < 0.2) {
+                        parents[0] = (Solution) selection_.execute(population_);
+                        parents[1] = (Solution) selection_.execute(population_);
+                    } else {
+                        parents[0] = (Solution) selection_.execute(offspringSolutionSets[i]);
+                        parents[1] = (Solution) selection_.execute(offspringSolutionSets[i]);
+                    }
+                    Solution[] offSpring = (Solution[]) crossover_
+                            .execute(parents);
+                    mutation_.execute(offSpring[0]);
+
+                    problemSet_.get(0).evaluate(offSpring[0]);
+                    problemSet_.get(0).evaluateConstraints(offSpring[0]);
+                    offspringPopulation_.add(offSpring[0]);
                 }
-                Solution[] offSpring = (Solution[]) crossover_
-                        .execute(parents);
-				/*if(rd0 < 0.2){
-					mutation_.execute(offSpring[0]);
-				}else if(rd0 < 0.8 && rd0 > 0.2){
-					Solution[] objectSolutionSet = new Solution[4];
-					objectSolutionSet[0] = offSpring[0];
-					//double rd = PseudoRandom.randDouble();
-					if(parents[0].getSumValue() < parents[1].getSumValue()){
-						objectSolutionSet[1] = parents[0];
-					}else{
-						objectSolutionSet[1] = parents[1];
-					}
-					int rnd = PseudoRandom.randInt(0, offspringSolutionSets[i].size()/5);
-					objectSolutionSet[2] = offspringSolutionSets[i].get(rnd);
+            }else {
 
-					int red = PseudoRandom.randInt(0, problem_.getNumberOfObjectives()-1);
-					objectSolutionSet[3] = gbests[red];
-					learning_.execute(objectSolutionSet);
-				}else{
-					Solution[] objectSolutionSet = new Solution[4];
-					objectSolutionSet[0] = offSpring[0];
-					//double rd = PseudoRandom.randDouble();
-					if(parents[0].getSumValue() < parents[1].getSumValue()){
-						objectSolutionSet[1] = parents[0];
-					}else{
-						objectSolutionSet[1] = parents[1];
-					}
-					int rnd = PseudoRandom.randInt(0, offspringSolutionSets[i].size()/5);
-					objectSolutionSet[2] = offspringSolutionSets[i].get(rnd);
+                Solution child;
+                Solution[] parents = new Solution[3];
+                for (int j = 0; j < offspringSolutionSets[i].size(); j++){
+                    double rd0 = PseudoRandom.randDouble();
+                    if (rd0 < 0.2){
+                        parents[0] = (Solution) selection_.execute(population_);
+                        parents[1] = (Solution) selection_.execute(population_);
+                        parents[2] = offspringSolutionSets[i].get(j);
+                    }
+                    else {
+                        parents[0] = (Solution) selection_.execute(offspringSolutionSets[i]);
+                        parents[1] = (Solution) selection_.execute(offspringSolutionSets[i]);
+                        parents[2] = offspringSolutionSets[i].get(j);
+                    }
+                    child = (Solution) crossover_.execute(new Object[] { offspringSolutionSets[i].get(j), parents });
+                    mutation_.execute(child);
 
-					int red = PseudoRandom.randInt(0, problem_.getNumberOfObjectives()-1);
-					objectSolutionSet[3] = gbests[red];
-					learning_.execute(objectSolutionSet);
-					mutation_.execute(offSpring[0]);
-				}*/
-                mutation_.execute(offSpring[0]);
-
-                problemSet_.get(0).evaluate(offSpring[0]);
-                problemSet_.get(0).evaluateConstraints(offSpring[0]);
-                offspringPopulation_.add(offSpring[0]);
+                    problemSet_.get(0).evaluate(child);
+                    problemSet_.get(0).evaluateConstraints(child);
+                    offspringPopulation_.add(child);
+                }
             }
         }
     }
@@ -463,6 +457,16 @@ public class MaOEAC extends Algorithm {
         selection_ = operators_.get("selection");
 
         learning_ = operators_.get("learning");
+
+        if (populationSize_ % problemSet_.getTotalNumberOfObjs() != 0){
+            while (true){
+                populationSize_ = populationSize_ - 1;
+                if((populationSize_) % problemSet_.getTotalNumberOfObjs() == 0){
+                    break;
+                }
+            }
+        }
+
     }
 
 
