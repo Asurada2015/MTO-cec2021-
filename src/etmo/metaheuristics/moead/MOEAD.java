@@ -2,8 +2,8 @@ package etmo.metaheuristics.moead;
 
 import etmo.core.*;
 import etmo.util.JMException;
-import jmetal.metaheuristics.moead.Utils;
 import etmo.util.PseudoRandom;
+import jmetal.metaheuristics.moead.Utils;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
