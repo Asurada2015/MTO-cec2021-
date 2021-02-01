@@ -1,10 +1,7 @@
 package etmo.metaheuristics.emtet;
 
 import etmo.core.*;
-import etmo.util.Distance;
-import etmo.util.JMException;
-import etmo.util.PORanking;
-import etmo.util.Ranking;
+import etmo.util.*;
 import etmo.util.comparators.CrowdingComparator;
 import etmo.util.comparators.LocationComparator;
 
@@ -97,7 +94,15 @@ public class EMTET extends MtoAlgorithm {
                 SolutionSet rankHignG = new SolutionSet(G);
                 if (survivalPopulation.size() == 0){
                     for (int k = 0; k < G; k++){
-                        Solution s = new Solution(population[j].get(k));
+                        Solution s;
+                        double rd0 = PseudoRandom.randDouble();
+                        if (rd0 < 0.2){
+                            s = new Solution(population[j].get(Math.abs(PseudoRandom.randInt() % populationSize)));
+                        }
+                        else {
+
+                            s = new Solution(population[j].get(k));
+                        }
                         s.setSkillFactor(1);
                         problemSet_.get(i).evaluate(s);
                         evaluations++;
@@ -107,18 +112,30 @@ public class EMTET extends MtoAlgorithm {
                 }
 //                存在存活个体，转换到源任务j寻找最近的邻居作为新的迁移解
                 else {
-                    int cycle = G / survivalPopulation.size();
-                    int more = G % survivalPopulation.size();
-                    for (int k = 0; k < survivalPopulation.size(); k++){
+                    int rG = G;
+                    double rd0 = PseudoRandom.randDouble();
+                    if (rd0 < 0.2){
+                        Solution s = new Solution(population[j].get(Math.abs(PseudoRandom.randInt() % populationSize)));
+                        s.setSkillFactor(1);
+                        problemSet_.get(i).evaluate(s);
+                        evaluations++;
+                        population[i].add(s);
+                        rG--;
+                    }
+                    else{
+                        int cycle = rG / survivalPopulation.size();
+                        int more = rG % survivalPopulation.size();
+                        for (int k = 0; k < survivalPopulation.size(); k++){
 
 //                        线性变换不影响直接在统一域内计算距离->还是先转换回去
-                        double x[] = problemSet_.get(j).scaleVariables(survivalPopulation.get(k));
+                            double x[] = problemSet_.get(j).scaleVariables(survivalPopulation.get(k));
 //                        Variable[] x = survivalPopulation.get(k).getDecisionVariables();
-                        int num = cycle;
-                        if (k < more) num += 1;
+                            int num = cycle;
+                            if (k < more) num += 1;
 //                        j是源任务，i是目标任务
-                        population[i] = population[i].union(transferNeighbor(x,j,i,num));
-                }
+                            population[i] = population[i].union(transferNeighbor(x,j,i,num));
+                        }
+                    }
 
                 }
 

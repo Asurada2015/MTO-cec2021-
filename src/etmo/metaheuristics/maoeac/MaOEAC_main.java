@@ -27,7 +27,7 @@ public class MaOEAC_main {
 
         HashMap parameters; // Operator parameters
 
-        for (int pCase = 1; pCase <= 16; pCase++ ){
+        for (int pCase = 9; pCase <= 16; pCase++ ){
             switch (pCase){
                 case 1:
                     problemSet1 = ETMOF1.getProblem();
@@ -93,13 +93,14 @@ public class MaOEAC_main {
                 String pf = "PF/StaticPF/" + problemSet2.get(0).getHType() + "_" + problemSet2.get(0).getNumberOfObjectives() + "D.pf";
                 //String pf = "PF/StaticPF/" + "convex.pf";
                 //System.out.println(pf);
-                algorithm.setInputParameter("populationSize", 100);
+                algorithm.setInputParameter("populationSize", 1000);
                 algorithm.setInputParameter("maxGenerations",1000);
 
                 parameters = new HashMap();
                 parameters.put("probability", 0.9);
                 parameters.put("distributionIndex", 20.0);
-                crossover = CrossoverFactory.getCrossoverOperator("DifferentialEvolutionCrossover", parameters);
+//                crossover = CrossoverFactory.getCrossoverOperator("DifferentialEvolutionCrossover", parameters);
+                crossover = CrossoverFactory.getCrossoverOperator("SBXCrossover", parameters);
 
                 // Mutation operator
                 parameters = new HashMap();
@@ -119,7 +120,7 @@ public class MaOEAC_main {
 //                System.out.println("RunID\t" + "IGD for " + problemSet2.get(0).getName());
                 DecimalFormat form = new DecimalFormat("#.####E0");
                 QualityIndicator indicator = new QualityIndicator(problemSet2.get(0), pf);
-                int times = 3;
+                int times = 21;
                 double aveIGD = 0;
                 for (int i = 1; i <= times; i++) {
                     SolutionSet population = algorithm.execute();

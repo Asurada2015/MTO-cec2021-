@@ -26,7 +26,7 @@ public class MOEAD_main {
 
         HashMap parameters; // Operator parameters
 
-        for (int pCase = 16; pCase <= 16; pCase++ ){
+        for (int pCase = 2; pCase <= 2; pCase++ ){
             switch (pCase){
                 case 1:
                     problemSet1 = ETMOF1.getProblem();
@@ -90,7 +90,7 @@ public class MOEAD_main {
                 String pf = "PF/StaticPF/" + problemSet2.get(0).getHType() + "_" + problemSet2.get(0).getNumberOfObjectives() + "D.pf";
 
                 algorithm.setInputParameter("populationSize", 100);
-                algorithm.setInputParameter("maxEvaluations", 100 * 1000);
+                algorithm.setInputParameter("maxEvaluations", 100 * 3000);
 
                 algorithm.setInputParameter("dataDirectory", "D:\\Workspace\\EMTO2021\\myRes\\MTO-cec2021-\\resources\\weightVectorFiles\\moead");
 

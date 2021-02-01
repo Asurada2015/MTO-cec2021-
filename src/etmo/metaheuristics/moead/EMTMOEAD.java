@@ -6,9 +6,6 @@ import etmo.core.SolutionSet;
 import etmo.util.JMException;
 
 public class EMTMOEAD extends MtoAlgorithm {
-
-
-
     /**
      * Constructor
      *

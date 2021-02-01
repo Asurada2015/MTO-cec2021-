@@ -24,7 +24,7 @@ public class EMTET_main {
 
         HashMap parameters; // Operator parameters
 
-        for (int pCase = 16; pCase <= 16; pCase++ ) {
+        for (int pCase = 1; pCase <= 8; pCase++ ) {
             switch (pCase) {
                 case 1:
                     problemSet = ETMOF1.getProblem();
@@ -72,7 +72,7 @@ public class EMTET_main {
                     problemSet = ETMOF15.getProblem();
                     break;
                 case 16:
-                    problemSet = ETMOF3.getProblem();
+                    problemSet = ETMOF16.getProblem();
                     break;
                 default:
                     problemSet = ETMOF3.getProblem();
@@ -89,7 +89,7 @@ public class EMTET_main {
 
             algorithm.setInputParameter("populationSize",100);
             algorithm.setInputParameter("maxEvaluations",100*taskNumber * 1000);
-            algorithm.setInputParameter("transferNum",28);
+            algorithm.setInputParameter("transferNum",10);
 
             parameters = new HashMap();
             parameters.put("probability", 0.9);
@@ -117,7 +117,7 @@ public class EMTET_main {
 
             System.out.println("RunID\t" + "IGD for "+problemSet.get(0).getName()+" to "+problemSet.get(taskNumber-1).getName());
 
-            int times = 1;
+            int times = 3;
 
             double ave[] = new double[taskNumber];
             for (int t = 1; t <= times; t++) {
