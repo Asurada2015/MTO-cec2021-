@@ -93,11 +93,11 @@ public class MaOEAC_main {
                 String pf = "PF/StaticPF/" + problemSet2.get(0).getHType() + "_" + problemSet2.get(0).getNumberOfObjectives() + "D.pf";
                 //String pf = "PF/StaticPF/" + "convex.pf";
                 //System.out.println(pf);
-                algorithm.setInputParameter("populationSize", 1000);
+                algorithm.setInputParameter("populationSize", 100);
                 algorithm.setInputParameter("maxGenerations",1000);
 
                 parameters = new HashMap();
-                parameters.put("probability", 0.9);
+                parameters.put("probability", 1.0);
                 parameters.put("distributionIndex", 20.0);
 //                crossover = CrossoverFactory.getCrossoverOperator("DifferentialEvolutionCrossover", parameters);
                 crossover = CrossoverFactory.getCrossoverOperator("SBXCrossover", parameters);

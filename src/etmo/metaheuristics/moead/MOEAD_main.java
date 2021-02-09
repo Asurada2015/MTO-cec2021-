@@ -14,7 +14,9 @@ import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.HashMap;
 
-public class MOEAD_main {
+public class
+
+MOEAD_main {
     public static void main(String args[]) throws IOException, JMException, ClassNotFoundException {
         ProblemSet problemSet1; // The problem to solve
         ProblemSet problemSet2;
@@ -90,7 +92,7 @@ public class MOEAD_main {
                 String pf = "PF/StaticPF/" + problemSet2.get(0).getHType() + "_" + problemSet2.get(0).getNumberOfObjectives() + "D.pf";
 
                 algorithm.setInputParameter("populationSize", 100);
-                algorithm.setInputParameter("maxEvaluations", 100 * 3000);
+                algorithm.setInputParameter("maxEvaluations", 100 * 1000);
 
                 algorithm.setInputParameter("dataDirectory", "D:\\Workspace\\EMTO2021\\myRes\\MTO-cec2021-\\resources\\weightVectorFiles\\moead");
 

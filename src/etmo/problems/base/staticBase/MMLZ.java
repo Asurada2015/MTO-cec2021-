@@ -51,6 +51,7 @@ public class MMLZ extends Problem {
 
 	@Override
 	public void evaluate(Solution solution) throws JMException {
+//		决策变量根据上下界转换
 		double vars[] = scaleVariables(solution);
 
 		double[] xI = new double[numberOfObjectives_ - 1];
@@ -61,7 +62,8 @@ public class MMLZ extends Problem {
 		
 		for (int i = numberOfObjectives_ - 1; i < numberOfVariables_; i++)
 			xII[i - numberOfObjectives_ + 1] = vars[i];
-		
+
+//		决策变量旋转，变换
 		xII = transformVariables(xII);
 		
 		int quotient = (numberOfVariables_ - numberOfObjectives_ + 1)/numberOfObjectives_;
